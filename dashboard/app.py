@@ -100,7 +100,7 @@ with ui.layout_columns(fill=False):
 # UI: Main Dashboard Cards
 # --------------------------------------------------------
 
-with ui.layout_columns(col_widths=[6, 6, 12]):
+with ui.layout_columns(col_widths=[6, 6]):
 
     # Card 1: Data Table
     with ui.card(full_screen=True):
@@ -152,41 +152,6 @@ with ui.layout_columns(col_widths=[6, 6, 12]):
                 ))
             return fig
         
-    # Card 3: Tip Percentages Histogram
-    with ui.card(full_screen=True):
-        with ui.card_header(class_="d-flex justify-content-between align-items-center"):
-            "Tip percentages"
-            with ui.popover(title="Add a color variable"):
-                ICONS["ellipsis"]
-                ui.input_radio_buttons(
-                    "tip_perc_y",
-                    "Split by:",
-                    ["sex", "smoker", "day", "time"],
-                    selected="day",
-                    inline=True,
-                )
-
-        ui.h3("Tip % Distribution by Category")
-
-    @render_plotly
-    def tip_dist_by_category():
-        df = tips_data()
-        group_col = input.tip_perc_y()
-
-        fig = px.histogram(
-            df,
-            x="tip_pct",
-            color=group_col,
-            facet_row=group_col,
-            nbins=30,
-            title=f"Tip % Distribution by {group_col.capitalize()}",
-            labels={"tip_pct": "Tip as % of Bill"},
-            color_discrete_sequence=px.colors.qualitative.Set2
-        )
-
-        fig.update_layout(height=400, showlegend=False)
-        return fig
-
     # Card 4: Tip by Sex Chart
     with ui.card(full_screen=True):
         ui.card_header("Average Tip by Sex")
@@ -241,8 +206,9 @@ def tips_data():
     idx1 = tips.total_bill.between(bill[0], bill[1])
     idx2 = tips.time.isin(input.time())
     idx3 = tips.sex.isin(input.sex())
-    return tips[idx1 & idx2 & idx3]
-
+    filtered = tips[idx1 & idx2 & idx3].copy()
+    filtered['tip_pct'] = filtered['tip'] / filtered['total_bill'] 
+    return filtered
 
 @reactive.effect
 @reactive.event(input.reset)
