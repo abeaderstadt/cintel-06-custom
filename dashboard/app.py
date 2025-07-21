@@ -125,16 +125,34 @@ with ui.layout_columns(col_widths=[6, 6, 12]):
 
         @render_plotly
         def scatterplot():
+            d = tips_data()
             color = input.scatter_color()
-            return px.scatter(
-                tips_data(),
+            fig = px.scatter(
+                d,
                 x="total_bill",
                 y="tip",
                 color=None if color == "none" else color,
-                trendline="lowess",
             )
+            if len(d) > 1:
+                import numpy as np
+                import plotly.graph_objs as go
+
+                coef = np.polyfit(d.total_bill, d.tip, 1)
+                poly1d_fn = np.poly1d(coef)
+            
+                x_line = np.linspace(d.total_bill.min(), d.total_bill.max(), 100)
+                y_line = poly1d_fn(x_line)
+            
+                fig.add_trace(go.Scatter(
+                    x=x_line,
+                    y=y_line,
+                    mode="lines",
+                    line=dict(color="black", dash="dash"),
+                    name="Trendline"
+                ))
+            return fig
         
-    # Card 3: Tip Percentages Ridgeplot
+    # Card 3: Tip Percentages Histogram
     with ui.card(full_screen=True):
         with ui.card_header(class_="d-flex justify-content-between align-items-center"):
             "Tip percentages"
