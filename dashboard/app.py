@@ -47,6 +47,13 @@ with ui.sidebar(open="desktop"):
         selected=["Lunch", "Dinner"],
         inline=True,
     )
+    ui.input_checkbox_group(
+    "sex",
+    "Sex",
+    ["Male", "Female"],
+    selected=["Male", "Female"],
+    inline=True,
+    )
     ui.input_action_button("reset", "Reset filter")
 
 # --------------------------------------------------------
@@ -165,7 +172,25 @@ with ui.layout_columns(col_widths=[6, 6, 12]):
                 )
             )
 
-            return plt
+    # Card 4: Tip by Sex Chart
+    with ui.card(full_screen=True):
+        ui.card_header("Average Tip by Sex")
+
+        @render_plotly
+        def tip_by_sex():
+            dat = tips_data()
+            if dat.empty:
+                return px.bar(title="No data to display.")
+
+            summary = dat.groupby("sex")["tip"].mean().reset_index()
+            return px.bar(
+                summary,
+                x="sex",
+                y="tip",
+                color="sex",
+                title="Average Tip by Sex",
+                labels={"tip": "Average Tip ($)", "sex": "Sex"},
+            )
 
 
 ui.include_css(app_dir / "styles.css")
@@ -180,7 +205,8 @@ def tips_data():
     bill = input.total_bill()
     idx1 = tips.total_bill.between(bill[0], bill[1])
     idx2 = tips.time.isin(input.time())
-    return tips[idx1 & idx2]
+    idx3 = tips.sex.isin(input.sex())
+    return tips[idx1 & idx2 & idx3]
 
 
 @reactive.effect
