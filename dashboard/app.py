@@ -1,11 +1,18 @@
+import pandas as pd
+from pathlib import Path
 import faicons as fa
 import plotly.express as px
 
 # Load data and compute static values
-from shared import app_dir, tips
 from shiny import reactive, render
 from shiny.express import input, ui
 from shinywidgets import render_plotly
+
+app_dir = Path(__file__).parent
+ui.include_css(app_dir / "styles.css")
+
+# Load the cleaned tips.csv file
+tips: pd.DataFrame = pd.read_csv(Path(__file__).parent / "tips.csv")
 
 bill_rng = (min(tips.total_bill), max(tips.total_bill))
 
