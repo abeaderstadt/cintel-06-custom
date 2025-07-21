@@ -152,7 +152,7 @@ with ui.layout_columns(col_widths=[6, 6]):
                 ))
             return fig
         
-    # Card 4: Tip by Sex Chart
+    # Card 3: Tip by Sex Chart
     with ui.card(full_screen=True):
         ui.card_header("Average Tip by Sex")
 
@@ -172,7 +172,7 @@ with ui.layout_columns(col_widths=[6, 6]):
                 labels={"tip": "Average Tip ($)", "sex": "Sex"},
             )
 
-    # Card 5: Total Tips by Day of Week
+    # Card 4: Total Tips by Day of Week
     with ui.card(full_screen=True):
         ui.card_header("Total Tips by Day of Week")
 
