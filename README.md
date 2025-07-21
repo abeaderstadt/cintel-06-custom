@@ -69,3 +69,32 @@ git push -u origin main
 Go to your GitHub repo settings and enable GitHub Pages for the docs folder.
 
 ## Explore
+
+This section guides you through exploring and interacting with the app to fully appreciate its features and functionality.
+
+1. **Launch the App**  
+   Open the live app using the GitHub Pages link or run it locally following the setup instructions above.
+
+2. **Interact with Filters**  
+   - Use the **Bill Amount** slider in the sidebar to filter data by the total bill value.  
+   - Select/deselect **Food Service** times (Lunch, Dinner) and **Sex** checkboxes to explore tipping behaviors across these categories.  
+   - Click the **Reset Filter** button to quickly restore all filters to their default states.
+
+3. **Review Summary Value Boxes**  
+   At the top of the main page, review key summary statistics that update reactively based on your filter selections:  
+   - **Total Tippers** — number of tips matching filters  
+   - **Average Tip** — average tip percentage given  
+   - **Average Bill** — average bill amount within your filters
+
+4. **Analyze the Charts**  
+   The app presents four interactive charts that respond to your filter inputs:  
+   - **Total Bill vs Tip Scatterplot** — Explore tipping trends and relationships by category, with options to color the points by sex, smoker status, day, or time.  
+   - **Tip Percentage Distribution by Category** — Histograms display how tip percentages vary across selected categories.  
+   - **Average Tip by Sex** — Compare average tip amounts between males and females dynamically.  
+   - **Total Tips by Day of Week** — View how total tips vary by day, showing patterns across the week.
+
+5. **Customize Your View**  
+   Use input controls within popovers on the charts to change color variables or categories, giving you additional ways to slice and dice the data.
+
+6. **Observe Reactive Updates**  
+   Try adjusting filters and note how all statistics, tables, and charts update instantly — demonstrating the power of reactive analytics with PyShiny.
