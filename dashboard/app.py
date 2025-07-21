@@ -11,6 +11,7 @@ import plotly.express as px
 from shiny import reactive, render
 from shiny.express import input, ui
 from shinywidgets import render_plotly
+from faicons import icon_svg
 
 # --------------------------------------------------------
 # Load Data and Set Up App
@@ -29,7 +30,7 @@ bill_rng = (min(tips.total_bill), max(tips.total_bill))
 # UI Setup: Page Options and Sidebar
 # --------------------------------------------------------
 
-ui.page_opts(title="Restaurant tipping", fillable=True)
+ui.page_opts(title="Tipping Behavior Insights🍴", fillable=True)
 
 with ui.sidebar(open="desktop"):
     ui.input_slider(
@@ -61,21 +62,21 @@ with ui.sidebar(open="desktop"):
 # --------------------------------------------------------
 
 ICONS = {
-    "user": fa.icon_svg("user", "regular"),
-    "wallet": fa.icon_svg("wallet"),
+    "users": fa.icon_svg("users", "solid"),
+    "hand-holding-heart": fa.icon_svg("hand-holding-heart", fill="white"),
     "currency-dollar": fa.icon_svg("dollar-sign"),
     "ellipsis": fa.icon_svg("ellipsis"),
 }
 
 with ui.layout_columns(fill=False):
-    with ui.value_box(showcase=ICONS["user"]):
+    with ui.value_box(showcase=ICONS["users"], class_="bg-secondary text-white"):
         "Total tippers"
 
         @render.express
         def total_tippers():
             tips_data().shape[0]
 
-    with ui.value_box(showcase=ICONS["wallet"]):
+    with ui.value_box(showcase=ICONS["hand-holding-heart"], class_="bg-secondary text-white"):
         "Average tip"
 
         @render.express
@@ -85,7 +86,7 @@ with ui.layout_columns(fill=False):
                 perc = d.tip / d.total_bill
                 f"{perc.mean():.1%}"
 
-    with ui.value_box(showcase=ICONS["currency-dollar"]):
+    with ui.value_box(showcase=ICONS["currency-dollar"], class_="bg-secondary text-white"):
         "Average bill"
 
         @render.express
@@ -167,10 +168,12 @@ with ui.layout_columns(col_widths=[6, 6, 12]):
             )
 
             plt.update_layout(
+                xaxis_title="Tip Percentage (Tip / Total Bill)",
                 legend=dict(
                     orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5
                 )
             )
+            return plt
 
     # Card 4: Tip by Sex Chart
     with ui.card(full_screen=True):
@@ -192,6 +195,26 @@ with ui.layout_columns(col_widths=[6, 6, 12]):
                 labels={"tip": "Average Tip ($)", "sex": "Sex"},
             )
 
+    # Card 5: Total Tips by Day of Week
+    with ui.card(full_screen=True):
+        ui.card_header("Total Tips by Day of Week")
+
+        @render_plotly
+        def total_tips_by_day():
+            dat = tips_data()
+            if dat.empty:
+                return px.bar(title="No data to display.")
+
+            summary = dat.groupby("day")["tip"].sum().reset_index()
+            return px.bar(
+                summary,
+                x="day",
+                y="tip",
+                color="day",
+                title="Total Tips by Day of Week",
+                labels={"tip": "Total Tips ($)", "day": "Day of Week"},
+                category_orders={"day": ["Thur", "Fri", "Sat", "Sun"]},
+            )
 
 ui.include_css(app_dir / "styles.css")
 
