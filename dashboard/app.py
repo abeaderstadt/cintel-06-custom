@@ -148,32 +148,26 @@ with ui.layout_columns(col_widths=[6, 6, 12]):
                     inline=True,
                 )
 
-        @render_plotly
-        def tip_perc():
-            from ridgeplot import ridgeplot
+        ui.h3("Tip % Distribution by Category")
 
-            dat = tips_data()
-            dat["percent"] = dat.tip / dat.total_bill
-            yvar = input.tip_perc_y()
-            uvals = dat[yvar].unique()
+    @render_plotly
+    def tip_dist_by_category():
+        df = tips_data()
+        group_col = input.tip_perc_y()
 
-            samples = [[dat.percent[dat[yvar] == val]] for val in uvals]
+        fig = px.histogram(
+            df,
+            x="tip_pct",
+            color=group_col,
+            facet_row=group_col,
+            nbins=30,
+            title=f"Tip % Distribution by {group_col.capitalize()}",
+            labels={"tip_pct": "Tip as % of Bill"},
+            color_discrete_sequence=px.colors.qualitative.Set2
+        )
 
-            plt = ridgeplot(
-                samples=samples,
-                labels=uvals,
-                bandwidth=0.01,
-                colorscale="viridis",
-                colormode="row-index",
-            )
-
-            plt.update_layout(
-                xaxis_title="Tip Percentage (Tip / Total Bill)",
-                legend=dict(
-                    orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5
-                )
-            )
-            return plt
+        fig.update_layout(height=400, showlegend=False)
+        return fig
 
     # Card 4: Tip by Sex Chart
     with ui.card(full_screen=True):
