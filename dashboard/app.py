@@ -1,12 +1,20 @@
+# --------------------------------------------------------
+# Imports
+# --------------------------------------------------------
+
 import pandas as pd
 from pathlib import Path
 import faicons as fa
 import plotly.express as px
 
-# Load data and compute static values
+# Shiny Imports
 from shiny import reactive, render
 from shiny.express import input, ui
 from shinywidgets import render_plotly
+
+# --------------------------------------------------------
+# Load Data and Set Up App
+# --------------------------------------------------------
 
 app_dir = Path(__file__).parent
 ui.include_css(app_dir / "styles.css")
@@ -14,9 +22,13 @@ ui.include_css(app_dir / "styles.css")
 # Load the cleaned tips.csv file
 tips: pd.DataFrame = pd.read_csv(Path(__file__).parent / "tips.csv")
 
+# Calculate bill range for slider
 bill_rng = (min(tips.total_bill), max(tips.total_bill))
 
-# Add page title and sidebar
+# --------------------------------------------------------
+# UI Setup: Page Options and Sidebar
+# --------------------------------------------------------
+
 ui.page_opts(title="Restaurant tipping", fillable=True)
 
 with ui.sidebar(open="desktop"):
@@ -37,7 +49,10 @@ with ui.sidebar(open="desktop"):
     )
     ui.input_action_button("reset", "Reset filter")
 
-# Add main content
+# --------------------------------------------------------
+# UI: Value Boxes
+# --------------------------------------------------------
+
 ICONS = {
     "user": fa.icon_svg("user", "regular"),
     "wallet": fa.icon_svg("wallet"),
@@ -73,8 +88,13 @@ with ui.layout_columns(fill=False):
                 bill = d.total_bill.mean()
                 f"${bill:.2f}"
 
+# --------------------------------------------------------
+# UI: Main Dashboard Cards
+# --------------------------------------------------------
 
 with ui.layout_columns(col_widths=[6, 6, 12]):
+
+    # Card 1: Data Table
     with ui.card(full_screen=True):
         ui.card_header("Tips data")
 
@@ -82,6 +102,7 @@ with ui.layout_columns(col_widths=[6, 6, 12]):
         def table():
             return render.DataGrid(tips_data())
 
+    # Card 2: Scatterplot
     with ui.card(full_screen=True):
         with ui.card_header(class_="d-flex justify-content-between align-items-center"):
             "Total bill vs tip"
@@ -104,7 +125,8 @@ with ui.layout_columns(col_widths=[6, 6, 12]):
                 color=None if color == "none" else color,
                 trendline="lowess",
             )
-
+        
+    # Card 3: Tip Percentages Ridgeplot
     with ui.card(full_screen=True):
         with ui.card_header(class_="d-flex justify-content-between align-items-center"):
             "Tip percentages"
